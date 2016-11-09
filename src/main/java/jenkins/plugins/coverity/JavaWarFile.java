@@ -10,9 +10,11 @@
  *******************************************************************************/
 package jenkins.plugins.coverity;
 
+import hudson.Extension;
 import hudson.model.AbstractDescribableImpl;
 import org.kohsuke.stapler.DataBoundConstructor;
 import hudson.Util;
+import hudson.model.Descriptor;
 
 public class JavaWarFile extends AbstractDescribableImpl<JavaWarFile> {
 
@@ -31,4 +33,9 @@ public class JavaWarFile extends AbstractDescribableImpl<JavaWarFile> {
         this.warFile=Util.fixEmpty(warFile);
     }
 
+    @Extension
+    public static class DescriptorImpl extends Descriptor<JavaWarFile> {
+        @Override
+        public String getDisplayName() { return ""; }
+    }
 }

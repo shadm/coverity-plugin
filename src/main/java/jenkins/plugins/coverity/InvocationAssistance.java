@@ -16,6 +16,8 @@ import net.sf.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.sf.json.JSONException;
+import net.sf.json.JSONSerializer;
 
 public class InvocationAssistance {
     private final String buildArguments;
@@ -86,27 +88,39 @@ public class InvocationAssistance {
     }
 
     @DataBoundConstructor
-    public InvocationAssistance(JSONObject postCovBuildJSON, JSONObject postCovAnalyzeJSON, boolean isCompiledSrc, boolean isScriptSrc, String buildArguments, String analyzeArguments, String commitArguments, String intermediateDir, JSONObject misraMap, String csharpAssemblies, List<JavaWarFile> javaWarFiles, String csharpMsvscaOutputFiles, boolean csharpAutomaticAssemblies, boolean csharpMsvsca, String saOverride, String covBuildBlacklist, boolean useAdvancedParser) {
+    public InvocationAssistance(String postCovBuildJSON, String postCovAnalyzeJSON, boolean isCompiledSrc, boolean isScriptSrc, String buildArguments, String analyzeArguments, String commitArguments, String intermediateDir, String misraMap, String csharpAssemblies, List<JavaWarFile> javaWarFiles, String csharpMsvscaOutputFiles, boolean csharpAutomaticAssemblies, boolean csharpMsvsca, String saOverride, String covBuildBlacklist, boolean useAdvancedParser) {
+        JSONObject pBuildJSON = null;
+        JSONObject pAnalyzeJSON = null;
+        JSONObject misraJSON = null;
+        try {
+            pBuildJSON = (JSONObject)JSONSerializer.toJSON(postCovBuildJSON);
+        } catch (JSONException e) { }
+        try {
+            pAnalyzeJSON = (JSONObject)JSONSerializer.toJSON(postCovAnalyzeJSON);
+        } catch (JSONException e) { }
+        try {
+            misraJSON = (JSONObject)JSONSerializer.toJSON(misraMap);
+        } catch (JSONException e) { }
         this.isCompiledSrc = isCompiledSrc;
         this.isScriptSrc = isScriptSrc;
-        this.postCovBuildJSON = postCovBuildJSON;
+        this.postCovBuildJSON = pBuildJSON;
         this.useAdvancedParser = useAdvancedParser;
         if(this.postCovBuildJSON != null) {
-            this.postCovBuildCmd = (String) postCovBuildJSON.get("postCovBuildCmd");
+            this.postCovBuildCmd = (String) pBuildJSON.get("postCovBuildCmd");
         } else {
             this.postCovBuildCmd = null;
         }
         this.isUsingPostCovBuildCmd = this.postCovBuildJSON != null;
-        this.postCovAnalyzeJSON = postCovAnalyzeJSON;
+        this.postCovAnalyzeJSON = pAnalyzeJSON;
         if(this.postCovAnalyzeJSON != null) {
-            this.postCovAnalyzeCmd = (String) postCovAnalyzeJSON.get("postCovAnalyzeCmd");
+            this.postCovAnalyzeCmd = (String) pAnalyzeJSON.get("postCovAnalyzeCmd");
         } else {
             this.postCovAnalyzeCmd =null;
         }
         this.isUsingPostCovAnalyzeCmd = this.postCovAnalyzeJSON != null;
-        this.misraMap = misraMap;
+        this.misraMap = misraJSON;
         if(this.misraMap != null) {
-            this.misraConfigFile = (String) misraMap.get("misraConfigFile");
+            this.misraConfigFile = (String) misraJSON.get("misraConfigFile");
         } else {
             this.misraConfigFile = null;
         }
